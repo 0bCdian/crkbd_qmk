@@ -19,18 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-
+#define CHORDAL_HOLD
 #define USE_MATRIX_I2C
 #define PERMISSIVE_HOLD_PER_KEY
-#define TAPPING_TERM 180
-#define QUICK_TAP_TERM 50
+#define TAPPING_TERM 200
+#define PERMISSIVE_HOLD
+#define QUICK_TAP_TERM 150
 #define SPLIT_WPM_ENABLE
 #define OLED_TIMEOUT 50000
 #define OLED_BRIGHTNESS 80
 #define TAPPING_TERM_PER_KEY
 #define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
 // Holding Shift while Caps Word is active inverts the shift state.
-#define CAPS_WORD_INVERT_ON_SHIFT
 #ifdef RGBLIGHT_ENABLE
     #undef  RGBLIGHT_EFFECT_BREATHING
     #undef  RGBLIGHT_EFFECT_RAINBOW_MOOD

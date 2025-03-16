@@ -1,87 +1,131 @@
 #include QMK_KEYBOARD_H
-#include "features/achordion.h"
 #if __has_include("keymap.h")
     #include "keymap.h"
 #endif
 
-// Define custom keys
+// Tap dance declarations
 
-// enum {
-//     THUMB_1,
-//     THUMB_3,
-//     THUMB_5,
-//     THUMB_6
-// };
-// void thumb1(tap_dance_state_t *state, void *user_data) {
-//     if (state->count == 1) {
-//         register_code16(OSL(4));
-//     } else if (state->count == 2) {
-//         register_code16(TG(4));
-//     }
-//
-//     if (state->finished) {
-//         if (state->count == 1) {
-//             unregister_code16(OSL(4));
-//         } else if (state->count == 2) {
-//             unregister_code16(TG(4));
-//         }
-//     }
-// }
-//
-// void thumb3(tap_dance_state_t *state, void *user_data) {
-//     if (state->count == 1) {
-//         register_code16(OSL(3));
-//     } else if (state->count == 2) {
-//         register_code16(TG(3));
-//     }
-//
-//     if (state->finished) {
-//         if (state->count == 1) {
-//             unregister_code16(OSL(3));
-//         } else if (state->count == 2) {
-//             unregister_code16(TG(3));
-//         }
-//     }
-// }
-// void thumb5(tap_dance_state_t *state, void *user_data) {
-//     if (state->count == 1) {
-//         register_code16(OSL(1));
-//     } else if (state->count == 2) {
-//         register_code16(TG(1));
-//     }
-//
-//     if (state->finished) {
-//         if (state->count == 1) {
-//             unregister_code16(OSL(1));
-//         } else if (state->count == 2) {
-//             unregister_code16(TG(1));
-//         }
-//     }
-// }
-// void thumb6(tap_dance_state_t *state, void *user_data) {
-//     if (state->count == 1) {
-//         register_code16(OSL(2));
-//     } else if (state->count == 2) {
-//         register_code16(TG(2));
-//     }
-//
-//     if (state->finished) {
-//         if (state->count == 1) {
-//             unregister_code16(OSL(2));
-//         } else if (state->count == 2) {
-//             unregister_code16(TG(2));
-//         }
-//     }
-// }
-// // Similar functions for thumb5 and thumb6
-//
-// tap_dance_action_t tap_dance_actions[] = {
-//     [THUMB_1] = ACTION_TAP_DANCE_FN(thumb1),
-//     [THUMB_3] = ACTION_TAP_DANCE_FN(thumb3),
-//     [THUMB_5] = ACTION_TAP_DANCE_FN(thumb5),
-//     [THUMB_6] = ACTION_TAP_DANCE_FN(thumb6),
-// };
+// Define a type for the tap dance states
+typedef enum {
+    TD_NONE,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP
+} td_state_t;
 
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+// Function to determine current tap dance state
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) return TD_DOUBLE_TAP;
+    else return TD_NONE;
+}
+
+// Initialize tap state
+static td_tap_t key_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void thumb_3(tap_dance_state_t *state, void *user_data) {
+    key_tap_state.state = cur_dance(state);
+    switch (key_tap_state.state) {
+        case TD_SINGLE_TAP:
+            tap_code(KC_MINS);
+            break;
+        case TD_SINGLE_HOLD:
+            // Momentarily activate your layer
+            layer_on(3); // Replace YOUR_LAYER with your layer number
+            break;
+        case TD_DOUBLE_TAP:
+            // Toggle your layer
+            layer_invert(3); // Replace YOUR_LAYER with your layer number
+            break;
+        default:
+            break;
+    }
+}
+
+void thumb_3_reset(tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released, turn off the layer
+    if (key_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(3); // Replace YOUR_LAYER with your layer number
+    }
+    key_tap_state.state = TD_NONE;
+}
+
+void thumb_5(tap_dance_state_t *state, void *user_data) {
+    key_tap_state.state = cur_dance(state);
+    switch (key_tap_state.state) {
+        case TD_SINGLE_TAP:
+            tap_code(KC_ESC);
+            break;
+        case TD_SINGLE_HOLD:
+            layer_on(1);
+            break;
+        case TD_DOUBLE_TAP:
+            layer_invert(1);
+            break;
+        default:
+            break;
+    }
+}
+
+void thumb_5_reset(tap_dance_state_t *state, void *user_data) {
+    if (key_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(1);
+    }
+    key_tap_state.state = TD_NONE;
+}
+
+void thumb_6(tap_dance_state_t *state, void *user_data) {
+    key_tap_state.state = cur_dance(state);
+    switch (key_tap_state.state) {
+        case TD_SINGLE_TAP:
+            tap_code(KC_DEL);
+            break;
+        case TD_SINGLE_HOLD:
+            layer_on(2);
+            break;
+        case TD_DOUBLE_TAP:
+            layer_invert(2);
+            break;
+        default:
+            break;
+    }
+}
+
+void thumb_6_reset(tap_dance_state_t *state, void *user_data) {
+    if (key_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(2);
+    }
+    key_tap_state.state = TD_NONE;
+}
+
+
+
+enum  {
+    DEL_NUM = 0,
+    ESC_SYM,
+    DSH_HPR,
+};
+
+
+tap_dance_action_t tap_dance_actions[] = {
+    [DEL_NUM] =ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_6,thumb_6_reset),
+    [ESC_SYM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_5,thumb_5_reset),
+    [DSH_HPR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_3,thumb_3_reset),
+};
+// Custom keycodes
+#define DOT_EXLM LT(0, KC_DOT)
+#define COMM_PIPE LT(0, KC_COMM)
+// Left hand homerowmods
 #define GUI_A LGUI_T(KC_A)
 #define ALT_S LALT_T(KC_S)
 #define CTL_D LCTL_T(KC_D)
@@ -93,148 +137,124 @@
 #define ALT_L LALT_T(KC_L)
 #define GUI_SCLN LGUI_T(KC_SCLN)
 
-// Define thumb aliases
-#define THUMB_2 KC_SPC
-#define THUMB_4 KC_ENT
-
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-//        ┌───────────────┬───────┬───────┬────────┬─────────┬────────┐   ┌─────────┬────────┬────────┬───────┬──────────┬──────┐
-//        │      esc      │   q   │   w   │   e    │    r    │   t    │   │    y    │   u    │   i    │   o   │    p     │ bspc │
-//        ├───────────────┼───────┼───────┼────────┼─────────┼────────┤   ├─────────┼────────┼────────┼───────┼──────────┼──────┤
-//        │      tab      │ GUI_A │ ALT_S │ CTL_D  │  SFT_F  │   g    │   │    h    │ SFT_J  │ CTL_K  │ ALT_L │ GUI_SCLN │  '   │
-//        ├───────────────┼───────┼───────┼────────┼─────────┼────────┤   ├─────────┼────────┼────────┼───────┼──────────┼──────┤
-//        │ OSM(MOD_RALT) │   z   │   x   │   c    │    v    │   b    │   │    n    │   m    │   ,    │   .   │    /     │  `   │
-//        └───────────────┴───────┴───────┼────────┼─────────┼────────┤   ├─────────┼────────┼────────┼───────┴──────────┴──────┘
-//                                        │ OSL(4) │ THUMB_2 │ OSL(3) │   │ THUMB_4 │ OSL(1) │ OSL(2) │
-//                                        └────────┴─────────┴────────┘   └─────────┴────────┴────────┘
+//        ┌────────────┬───────┬───────┬───────────────┬───────┬─────────────┐   ┌─────┬─────────────┬─────────────┬──────────┬──────────┬──────┐
+//        │ LT(2, esc) │   q   │   w   │       e       │   r   │      t      │   │  y  │      u      │      i      │    o     │    p     │ bspc │
+//        ├────────────┼───────┼───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┼──────────┼──────┤
+//        │    tab     │ GUI_A │ ALT_S │     CTL_D     │ SFT_F │      g      │   │  h  │    SFT_J    │    CTL_K    │  ALT_L   │ GUI_SCLN │  '   │
+//        ├────────────┼───────┼───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┼──────────┼──────┤
+//        │   OSL(4)   │   z   │   x   │       c       │   v   │      b      │   │  n  │  LT(3, m)   │  COMM_PIPE  │ DOT_EXLM │    /     │  `   │
+//        └────────────┴───────┴───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┴──────────┴──────┘
+//                                     │ OSM(MOD_RALT) │  spc  │ TD(DSH_HPR) │   │ ent │ TD(ESC_SYM) │ TD(DEL_NUM) │
+//                                     └───────────────┴───────┴─────────────┘   └─────┴─────────────┴─────────────┘
 [0] = LAYOUT_split_3x6_3(
-      KC_ESC        , KC_Q  , KC_W  , KC_E   , KC_R    , KC_T   ,     KC_Y    , KC_U   , KC_I    , KC_O   , KC_P     , KC_BSPC,
-      KC_TAB        , GUI_A , ALT_S , CTL_D  , SFT_F   , KC_G   ,     KC_H    , SFT_J  , CTL_K   , ALT_L  , GUI_SCLN , KC_QUOT,
-      OSM(MOD_RALT) , KC_Z  , KC_X  , KC_C   , KC_V    , KC_B   ,     KC_N    , KC_M   , KC_COMM , KC_DOT , KC_SLSH  , KC_GRV ,
-                                      OSL(4) , THUMB_2 , OSL(3) ,     THUMB_4 , OSL(1) , OSL(2)
+      LT(2, KC_ESC) , KC_Q  , KC_W  , KC_E          , KC_R   , KC_T        ,     KC_Y   , KC_U        , KC_I        , KC_O     , KC_P     , KC_BSPC,
+      KC_TAB        , GUI_A , ALT_S , CTL_D         , SFT_F  , KC_G        ,     KC_H   , SFT_J       , CTL_K       , ALT_L    , GUI_SCLN , KC_QUOT,
+      OSL(4)        , KC_Z  , KC_X  , KC_C          , KC_V   , KC_B        ,     KC_N   , LT(3, KC_M) , COMM_PIPE   , DOT_EXLM , KC_SLSH  , KC_GRV ,
+                                      OSM(MOD_RALT) , KC_SPC , TD(DSH_HPR) ,     KC_ENT , TD(ESC_SYM) , TD(DEL_NUM)
 ),
 
-//        ┌───────┬───┬───┬──────┬───┬───┐   ┌─────────┬─────────┬────────┬─────────┬─────────┬───────┐
-//        │  esc  │ # │ @ │  {   │ } │ % │   │ LCTL(c) │ LCTL(v) │   up   │ LCTL(x) │ LCTL(z) │ bspc  │
-//        ├───────┼───┼───┼──────┼───┼───┤   ├─────────┼─────────┼────────┼─────────┼─────────┼───────┤
-//        │  tab  │ ! │ & │  (   │ ) │ = │   │   no    │  left   │  down  │  rght   │    ;    │   '   │
-//        ├───────┼───┼───┼──────┼───┼───┤   ├─────────┼─────────┼────────┼─────────┼─────────┼───────┤
-//        │ TO(0) │ ^ │ $ │  [   │ ] │ \ │   │ RCS(c)  │ RCS(v)  │ RCS(x) │ RCS(x)  │ LCTL(z) │ TG(3) │
-//        └───────┴───┴───┼──────┼───┼───┤   ├─────────┼─────────┼────────┼─────────┴─────────┴───────┘
-//                        │ kp_* │ | │ - │   │  TO(0)  │  TG(1)  │   no   │
-//                        └──────┴───┴───┘   └─────────┴─────────┴────────┘
+//        ┌───────┬───┬───┬─────┬───┬───┐   ┌─────────┬─────────┬─────────┬─────────┬─────────┬──────┐
+//        │ TO(0) │ # │ @ │  {  │ } │ % │   │ LCTL(c) │ LCTL(v) │ LCTL(x) │ LCTL(x) │ LCTL(z) │ bspc │
+//        ├───────┼───┼───┼─────┼───┼───┤   ├─────────┼─────────┼─────────┼─────────┼─────────┼──────┤
+//        │  tab  │ ! │ & │  (  │ ) │ = │   │ CW_TOGG │  lsft   │  lctl   │  lalt   │    ;    │  '   │
+//        ├───────┼───┼───┼─────┼───┼───┤   ├─────────┼─────────┼─────────┼─────────┼─────────┼──────┤
+//        │  no   │ ^ │ $ │  [  │ ] │ \ │   │ RCS(c)  │ RCS(v)  │ RCS(x)  │ RCS(x)  │ LCTL(z) │      │
+//        └───────┴───┴───┼─────┼───┼───┤   ├─────────┼─────────┼─────────┼─────────┴─────────┴──────┘
+//                        │     │ | │ - │   │         │  TO(0)  │         │
+//                        └─────┴───┴───┘   └─────────┴─────────┴─────────┘
 [1] = LAYOUT_split_3x6_3(
-      KC_ESC , KC_HASH , KC_AT   , KC_LCBR , KC_RCBR , KC_PERC      ,     LCTL(KC_C) , LCTL(KC_V) , KC_UP     , LCTL(KC_X) , LCTL(KC_Z) , KC_BSPC,
-      KC_TAB , KC_EXLM , KC_AMPR , KC_LPRN , KC_RPRN , KC_EQUAL     ,     KC_NO      , KC_LEFT    , KC_DOWN   , KC_RGHT    , KC_SCLN    , KC_QUOT,
-      TO(0)  , KC_CIRC , KC_DLR  , KC_LBRC , KC_RBRC , KC_BACKSLASH ,     RCS(KC_C)  , RCS(KC_V)  , RCS(KC_X) , RCS(KC_X)  , LCTL(KC_Z) , TG(3)  ,
-                                   KC_PAST , KC_PIPE , KC_MINS      ,     TO(0)      , TG(1)      , KC_NO
+      TO(0)  , KC_HASH , KC_AT   , KC_LCBR , KC_RCBR , KC_PERC      ,     LCTL(KC_C) , LCTL(KC_V) , LCTL(KC_X) , LCTL(KC_X) , LCTL(KC_Z) , KC_BSPC,
+      KC_TAB , KC_EXLM , KC_AMPR , KC_LPRN , KC_RPRN , KC_EQUAL     ,     CW_TOGG    , KC_LSFT    , KC_LCTL    , KC_LALT    , KC_SCLN    , KC_QUOT,
+      KC_NO  , KC_CIRC , KC_DLR  , KC_LBRC , KC_RBRC , KC_BACKSLASH ,     RCS(KC_C)  , RCS(KC_V)  , RCS(KC_X)  , RCS(KC_X)  , LCTL(KC_Z) , KC_TRNS,
+                                   KC_TRNS , KC_PIPE , KC_MINS      ,     KC_TRNS    , TO(0)      , KC_TRNS
 ),
 
-//        ┌───────┬───┬───┬───┬───┬──────┐   ┌────┬───────┬───────┬──────┬──────┬──────┐
-//        │  esc  │ [ │ 7 │ 8 │ 9 │  /   │   │ no │  no   │  no   │  no  │  no  │ bspc │
-//        ├───────┼───┼───┼───┼───┼──────┤   ├────┼───────┼───────┼──────┼──────┼──────┤
-//        │  tab  │ ; │ 4 │ 5 │ 6 │  =   │   │ no │ lsft  │ lctl  │ ralt │ lgui │  no  │
-//        ├───────┼───┼───┼───┼───┼──────┤   ├────┼───────┼───────┼──────┼──────┼──────┤
-//        │ TO(0) │ ` │ 1 │ 2 │ 3 │ kp_* │   │ no │  no   │   ,   │  .   │  no  │  no  │
-//        └───────┴───┴───┼───┼───┼──────┤   ├────┼───────┼───────┼──────┴──────┴──────┘
-//                        │ _ │ 0 │  -   │   │ no │ TO(0) │ TG(2) │
-//                        └───┴───┴──────┘   └────┴───────┴───────┘
+//        ┌───────┬───┬───┬─────┬───┬──────┐   ┌──────┬──────┬───────┬──────┬─────────┬──────┐
+//        │ TO(0) │ [ │ 7 │  8  │ 9 │  /   │   │ pgup │ home │  up   │ end  │ CW_TOGG │ bspc │
+//        ├───────┼───┼───┼─────┼───┼──────┤   ├──────┼──────┼───────┼──────┼─────────┼──────┤
+//        │  tab  │ ; │ 4 │  5  │ 6 │  =   │   │ pgdn │ left │ down  │ rght │   del   │  no  │
+//        ├───────┼───┼───┼─────┼───┼──────┤   ├──────┼──────┼───────┼──────┼─────────┼──────┤
+//        │  no   │ _ │ 1 │  2  │ 3 │ kp_* │   │  no  │  no  │   ,   │  .   │   no    │  no  │
+//        └───────┴───┴───┼─────┼───┼──────┤   ├──────┼──────┼───────┼──────┴─────────┴──────┘
+//                        │     │ 0 │      │   │      │      │ TO(0) │
+//                        └─────┴───┴──────┘   └──────┴──────┴───────┘
 [2] = LAYOUT_split_3x6_3(
-      KC_ESC , KC_LBRC , KC_7 , KC_8    , KC_9 , KC_SLSH ,     KC_NO , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_BSPC,
-      KC_TAB , KC_SCLN , KC_4 , KC_5    , KC_6 , KC_EQL  ,     KC_NO , KC_LSFT , KC_LCTL , KC_RALT , KC_LGUI , KC_NO  ,
-      TO(0)  , KC_GRV  , KC_1 , KC_2    , KC_3 , KC_PAST ,     KC_NO , KC_NO   , KC_COMM , KC_DOT  , KC_NO   , KC_NO  ,
-                                KC_UNDS , KC_0 , KC_MINS ,     KC_NO , TO(0)   , TG(2)
+      TO(0)  , KC_LBRC , KC_7 , KC_8    , KC_9 , KC_SLSH ,     KC_PGUP , KC_HOME , KC_UP   , KC_END  , CW_TOGG , KC_BSPC,
+      KC_TAB , KC_SCLN , KC_4 , KC_5    , KC_6 , KC_EQL  ,     KC_PGDN , KC_LEFT , KC_DOWN , KC_RGHT , KC_DEL  , KC_NO  ,
+      KC_NO  , KC_UNDS , KC_1 , KC_2    , KC_3 , KC_PAST ,     KC_NO   , KC_NO   , KC_COMM , KC_DOT  , KC_NO   , KC_NO  ,
+                                KC_TRNS , KC_0 , KC_TRNS ,     KC_TRNS , KC_TRNS , TO(0)
 ),
 
 //        ┌───────────┬─────────┬─────────┬─────────┬─────────┬───────────┐   ┌───────────┬────────────┬────────────┬────────────┬──────┬──────┐
-//        │    esc    │ LGUI(q) │ LGUI(7) │ LGUI(8) │ LGUI(9) │    no     │   │    no     │     no     │  LGUI(up)  │     no     │  no  │ bspc │
+//        │   TO(0)   │ LGUI(q) │ LGUI(7) │ LGUI(8) │ LGUI(9) │    no     │   │    no     │     no     │  LGUI(up)  │     no     │  no  │ bspc │
 //        ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┤   ├───────────┼────────────┼────────────┼────────────┼──────┼──────┤
 //        │ LGUI(tab) │   no    │ LGUI(4) │ LGUI(5) │ LGUI(6) │ LGUI(spc) │   │ LGUI(spc) │ LGUI(left) │ LGUI(down) │ LGUI(rght) │ lgui │  no  │
 //        ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┤   ├───────────┼────────────┼────────────┼────────────┼──────┼──────┤
-//        │   TO(0)   │   no    │ LGUI(1) │ LGUI(2) │ LGUI(3) │ LGUI(ent) │   │    no     │     no     │     ,      │     .      │  no  │  no  │
+//        │    no     │   no    │ LGUI(1) │ LGUI(2) │ LGUI(3) │ LGUI(ent) │   │    no     │     no     │     ,      │     .      │  no  │  no  │
 //        └───────────┴─────────┴─────────┼─────────┼─────────┼───────────┤   ├───────────┼────────────┼────────────┼────────────┴──────┴──────┘
-//                                        │   no    │ LGUI(0) │   TG(3)   │   │ LGUI(ent) │   TO(0)    │   TG(4)    │
+//                                        │         │ LGUI(0) │   TO(0)   │   │ LGUI(ent) │            │            │
 //                                        └─────────┴─────────┴───────────┘   └───────────┴────────────┴────────────┘
 [3] = LAYOUT_split_3x6_3(
-      KC_ESC       , LGUI(KC_Q) , LGUI(KC_7) , LGUI(KC_8) , LGUI(KC_9) , KC_NO        ,     KC_NO        , KC_NO         , LGUI(KC_UP)   , KC_NO         , KC_NO   , KC_BSPC,
+      TO(0)        , LGUI(KC_Q) , LGUI(KC_7) , LGUI(KC_8) , LGUI(KC_9) , KC_NO        ,     KC_NO        , KC_NO         , LGUI(KC_UP)   , KC_NO         , KC_NO   , KC_BSPC,
       LGUI(KC_TAB) , KC_NO      , LGUI(KC_4) , LGUI(KC_5) , LGUI(KC_6) , LGUI(KC_SPC) ,     LGUI(KC_SPC) , LGUI(KC_LEFT) , LGUI(KC_DOWN) , LGUI(KC_RGHT) , KC_LGUI , KC_NO  ,
-      TO(0)        , KC_NO      , LGUI(KC_1) , LGUI(KC_2) , LGUI(KC_3) , LGUI(KC_ENT) ,     KC_NO        , KC_NO         , KC_COMM       , KC_DOT        , KC_NO   , KC_NO  ,
-                                               KC_NO      , LGUI(KC_0) , TG(3)        ,     LGUI(KC_ENT) , TO(0)         , TG(4)
+      KC_NO        , KC_NO      , LGUI(KC_1) , LGUI(KC_2) , LGUI(KC_3) , LGUI(KC_ENT) ,     KC_NO        , KC_NO         , KC_COMM       , KC_DOT        , KC_NO   , KC_NO  ,
+                                               KC_TRNS    , LGUI(KC_0) , TO(0)        ,     LGUI(KC_ENT) , KC_TRNS       , KC_TRNS
 ),
 
-//        ┌───────┬─────┬────┬───────┬───────┬────────┐   ┌────┬──────┬──────┬──────┬──────┬────┐
-//        │  no   │ f12 │ f7 │  f8   │  f9   │  pscr  │   │ no │  no  │  no  │  no  │  no  │ no │
-//        ├───────┼─────┼────┼───────┼───────┼────────┤   ├────┼──────┼──────┼──────┼──────┼────┤
-//        │  no   │ f11 │ f4 │  f5   │  f6   │  ins   │   │ no │ lsft │ lctl │ ralt │ lgui │ no │
-//        ├───────┼─────┼────┼───────┼───────┼────────┤   ├────┼──────┼──────┼──────┼──────┼────┤
-//        │ TO(0) │ f10 │ f1 │  f2   │  f3   │ LSG(e) │   │ no │  no  │  no  │  no  │  no  │ no │
-//        └───────┴─────┴────┼───────┼───────┼────────┤   ├────┼──────┼──────┼──────┴──────┴────┘
-//                           │ TG(4) │ TO(0) │   no   │   │ no │  no  │  no  │
-//                           └───────┴───────┴────────┘   └────┴──────┴──────┘
+//        ┌───────┬─────┬────┬─────┬───────┬────────┐   ┌─────┬──────┬──────┬──────┬──────┬─────┐
+//        │ TO(0) │ f12 │ f7 │ f8  │  f9   │  pscr  │   │ no  │  no  │  no  │  no  │  no  │ del │
+//        ├───────┼─────┼────┼─────┼───────┼────────┤   ├─────┼──────┼──────┼──────┼──────┼─────┤
+//        │  no   │ f11 │ f4 │ f5  │  f6   │  ins   │   │ no  │ lsft │ lctl │ ralt │ lgui │ no  │
+//        ├───────┼─────┼────┼─────┼───────┼────────┤   ├─────┼──────┼──────┼──────┼──────┼─────┤
+//        │ TO(0) │ f10 │ f1 │ f2  │  f3   │ LSG(e) │   │ no  │  no  │  no  │  no  │  no  │ no  │
+//        └───────┴─────┴────┼─────┼───────┼────────┤   ├─────┼──────┼──────┼──────┴──────┴─────┘
+//                           │     │ TO(0) │        │   │     │      │      │
+//                           └─────┴───────┴────────┘   └─────┴──────┴──────┘
 [4] = LAYOUT_split_3x6_3(
-      KC_NO , KC_F12 , KC_F7 , KC_F8 , KC_F9 , KC_PSCR   ,     KC_NO , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO,
-      KC_NO , KC_F11 , KC_F4 , KC_F5 , KC_F6 , KC_INS    ,     KC_NO , KC_LSFT , KC_LCTL , KC_RALT , KC_LGUI , KC_NO,
-      TO(0) , KC_F10 , KC_F1 , KC_F2 , KC_F3 , LSG(KC_E) ,     KC_NO , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO,
-                               TG(4) , TO(0) , KC_NO     ,     KC_NO , KC_NO   , KC_NO
+      TO(0) , KC_F12 , KC_F7 , KC_F8   , KC_F9 , KC_PSCR   ,     KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_DEL,
+      KC_NO , KC_F11 , KC_F4 , KC_F5   , KC_F6 , KC_INS    ,     KC_NO   , KC_LSFT , KC_LCTL , KC_RALT , KC_LGUI , KC_NO ,
+      TO(0) , KC_F10 , KC_F1 , KC_F2   , KC_F3 , LSG(KC_E) ,     KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO ,
+                               KC_TRNS , TO(0) , KC_TRNS   ,     KC_TRNS , KC_TRNS , KC_TRNS
 )
 };
-bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-  if (!process_achordion(keycode, record)) { return false; }
-  return true;
-};
-
-bool achordion_chord(uint16_t tap_hold_keycode,
-                     keyrecord_t* tap_hold_record,
-                     uint16_t other_keycode,
-                     keyrecord_t* other_record) {
-
-  // Also allow same-hand holds when the other key is in the rows below the
-  // alphas. I need the `% (MATRIX_ROWS / 2)` because my keyboard is split.
-  if (other_record->event.key.row % (MATRIX_ROWS / 2) >= 4) { return true; }
-
-  // Otherwise, follow the opposite hands rule.
-  return achordion_opposite_hands(tap_hold_record, other_record);
-};
-
-// uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-//   switch (tap_hold_keycode) {
-//     case TD(THUMB_1):
-//     case THUMB_2:
-//     case TD(THUMB_3):
-//     case THUMB_4:
-//     case TD(THUMB_5):
-//     case TD(THUMB_6):
-//       return 0;  // Bypass Achordion for these keys.
-// }
-//
-//   return 800;  // Otherwise use a timeout of 400 ms.
-// };
-
-bool achordion_eager_mod(uint8_t mod) {
-  switch (mod) {
-    case MOD_LSFT:
-    case MOD_RSFT:
-    case MOD_LCTL:
-    case MOD_RCTL:
-      return true;  // Eagerly apply Shift and Ctrl mods.
-    default:
-      return false;
+const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM =
+    LAYOUT(
+        'L', 'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R', 'R',
+                       'L', 'L', 'L',  'R', 'R', 'R'
+    );
+static bool process_tap_or_long_press_key(
+    keyrecord_t* record, uint16_t long_press_keycode) {
+  if (record->tap.count == 0) {  // Key is being held.
+    if (record->event.pressed) {
+      tap_code16(long_press_keycode);
+    }
+    return false;  // Skip default handling.
   }
+  return true;  // Continue default handling.
 }
 
-void housekeeping_task_user(void) {
-  achordion_task();
+bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+    switch(keycode){
+        case DOT_EXLM:
+            return process_tap_or_long_press_key(record,KC_EXLM);
+        case COMM_PIPE:
+            return process_tap_or_long_press_key(record,KC_PIPE);
+    };
+
+  return true;
 };
 
 // Define homerowmods speeds per key
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     // List of keycodes with a custom tapping term
     switch (keycode) {
-        case SFT_J:
-        case CTL_K:
-        case ALT_L:
-        case THUMB_2:
+        case LSFT_T(KC_F):
+        case LCTL_T(KC_D):
+        case RSFT_T(KC_J):
+        case RCTL_T(KC_K):
             return TAPPING_TERM - 40;
         default:
             return TAPPING_TERM;
@@ -247,9 +267,9 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t* record) {
   // lead to missed triggers in fast typing. Here, returning 0 means we
   // instead want to "force hold" and disable key repeating.
   switch (keycode) {
-       case KC_J:
-       case KC_K:
-       case KC_L:
+       case RSFT_T(KC_J):
+       case RCTL_T(KC_K):
+       case LGUI(KC_L):
       return QUICK_TAP_TERM;  // Enable key repeating.
     default:
       return 0;  // Otherwise, force hold and disable key repeating.
@@ -259,9 +279,9 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t* record) {
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         // Immediately select the hold action when another key is tapped.
-        case SFT_F:
+        case LSFT_T(KC_F):
             return true;
-        case SFT_J:
+        case RSFT_T(SFT_J):
             return true;
         // Do not select the hold action when another key is tapped.
         default:

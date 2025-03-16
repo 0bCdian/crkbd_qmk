@@ -4,5 +4,4 @@ OLED_ENABLE = yes
 COMMAND_ENABLE = no
 CAPS_WORD_ENABLE = yes
 WPM_ENABLE = yes
-# TAP_DANCE_ENABLE = yes
-SRC += features/achordion.c
+TAP_DANCE_ENABLE = yes
