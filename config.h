@@ -21,10 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #define CHORDAL_HOLD
 #define USE_MATRIX_I2C
-#define PERMISSIVE_HOLD_PER_KEY
-#define TAPPING_TERM 150
 #define PERMISSIVE_HOLD
-#define QUICK_TAP_TERM 150
+#define PERMISSIVE_HOLD_PER_KEY
+#define TAPPING_TERM 250
+//#define PERMISSIVE_HOLD
+#define QUICK_TAP_TERM 80
 #define SPLIT_WPM_ENABLE
 #define OLED_TIMEOUT 50000
 #define OLED_BRIGHTNESS 80

@@ -218,13 +218,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                KC_TRNS , TO(0) , KC_TRNS   ,     KC_TRNS , KC_TRNS , KC_TRNS
 )
 };
-const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM =
-    LAYOUT(
-        'L', 'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R', 'R',
-        'L', 'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R', 'R',
-        'L', 'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R', 'R',
-                       'L', 'L', 'L',  'R', 'R', 'R'
-    );
+
+// char chordal_hold_handedness(keypos_t key) {
+//     if (key.col == 0 || key.col == MATRIX_COLS - 1) {
+//         return '*';  // Exempt the outer columns.
+//     }
+//     // On split keyboards, typically, the first half of the rows are on the
+//     // left, and the other half are on the right.
+//     return key.row < MATRIX_ROWS / 2 ? 'L' : 'R';
+// }
 static bool process_tap_or_long_press_key(
     keyrecord_t* record, uint16_t long_press_keycode) {
   if (record->tap.count == 0) {  // Key is being held.
@@ -251,11 +253,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     // List of keycodes with a custom tapping term
     switch (keycode) {
-        case LSFT_T(KC_F):
-        case LCTL_T(KC_D):
-        case RSFT_T(KC_J):
-        case RCTL_T(KC_K):
-            return TAPPING_TERM - 40;
+    //     case LSFT_T(KC_F):
+    //     case LCTL_T(KC_D):
+    //     case RSFT_T(KC_J):
+    //     case RCTL_T(KC_K):
+    //         return TAPPING_TERM + 100;
+    case TD(DSH_HPR):
+    case TD(DEL_NUM):
+    case TD(ESC_SYM):
+        return TAPPING_TERM - 100;
         default:
             return TAPPING_TERM;
     }
@@ -486,8 +492,8 @@ bool oled_task_user(void) {
         oled_set_cursor(0, 3);
         led_t led_state = host_keyboard_led_state();
         oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
-            oled_write_P(led_state.caps_lock ? PSTR("CAP") : PSTR(" "), false);
-        oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
+        oled_set_cursor(0, 4);
+        oled_write_P(led_state.caps_lock ? PSTR("CAP") : PSTR("   "), false);
         oled_set_cursor(0, 5);
         oled_write_ln("LAYER", false);
         oled_set_cursor(0, 6);
