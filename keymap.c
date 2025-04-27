@@ -253,17 +253,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     // List of keycodes with a custom tapping term
     switch (keycode) {
-    //     case LSFT_T(KC_F):
-    //     case LCTL_T(KC_D):
-    //     case RSFT_T(KC_J):
-    //     case RCTL_T(KC_K):
-    //         return TAPPING_TERM + 100;
     case TD(DSH_HPR):
     case TD(DEL_NUM):
     case TD(ESC_SYM):
-        return TAPPING_TERM - 100;
-        default:
-            return TAPPING_TERM;
+      return TAPPING_TERM - 100;
+    case SFT_J:
+    case SFT_F:
+      return TAPPING_TERM - 20;
+    default:
+      return TAPPING_TERM;
     }
 };
 
@@ -273,10 +271,10 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t* record) {
   // lead to missed triggers in fast typing. Here, returning 0 means we
   // instead want to "force hold" and disable key repeating.
   switch (keycode) {
-       case RSFT_T(KC_J):
-       case RCTL_T(KC_K):
-       case LGUI(KC_L):
-      return QUICK_TAP_TERM;  // Enable key repeating.
+    case RSFT_T(KC_J):
+    case RCTL_T(KC_K):
+    case LGUI(KC_L):
+      return QUICK_TAP_TERM;
     default:
       return 0;  // Otherwise, force hold and disable key repeating.
   }
@@ -286,7 +284,6 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         // Immediately select the hold action when another key is tapped.
         case LSFT_T(KC_F):
-            return true;
         case RSFT_T(SFT_J):
             return true;
         // Do not select the hold action when another key is tapped.
