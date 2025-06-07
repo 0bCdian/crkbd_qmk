@@ -118,7 +118,7 @@ enum  {
 
 
 tap_dance_action_t tap_dance_actions[] = {
-    [DEL_NUM] =ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_6,thumb_6_reset),
+    [DEL_NUM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_6,thumb_6_reset),
     [ESC_SYM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_5,thumb_5_reset),
     [DSH_HPR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,thumb_3,thumb_3_reset),
 };
@@ -138,19 +138,19 @@ tap_dance_action_t tap_dance_actions[] = {
 #define GUI_SCLN LGUI_T(KC_SCLN)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-//        ┌────────────┬───────┬───────┬───────────────┬───────┬─────────────┐   ┌─────┬─────────────┬─────────────┬──────────┬──────────┬──────┐
-//        │ LT(2, esc) │   q   │   w   │       e       │   r   │      t      │   │  y  │      u      │      i      │    o     │    p     │ bspc │
-//        ├────────────┼───────┼───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┼──────────┼──────┤
-//        │    tab     │ GUI_A │ ALT_S │     CTL_D     │ SFT_F │      g      │   │  h  │    SFT_J    │    CTL_K    │  ALT_L   │ GUI_SCLN │  '   │
-//        ├────────────┼───────┼───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┼──────────┼──────┤
-//        │   OSL(4)   │   z   │   x   │       c       │   v   │      b      │   │  n  │  LT(3, m)   │  COMM_PIPE  │ DOT_EXLM │    /     │  `   │
-//        └────────────┴───────┴───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┴──────────┴──────┘
+//        ┌────────────┬───────┬───────┬───────────────┬───────┬─────────────┐   ┌─────┬─────────────┬─────────────┬──────────┬──────────┬──────────┐
+//        │ LT(2, esc) │   q   │   w   │       e       │   r   │      t      │   │  y  │      u      │      i      │    o     │    p     │   bspc   │
+//        ├────────────┼───────┼───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┼──────────┼──────────┤
+//        │    tab     │ GUI_A │ ALT_S │     CTL_D     │ SFT_F │      g      │   │  h  │    SFT_J    │    CTL_K    │  ALT_L   │ GUI_SCLN │    '     │
+//        ├────────────┼───────┼───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┼──────────┼──────────┤
+//        │   OSL(4)   │   z   │   x   │       c       │   v   │      b      │   │  n  │  LT(3, m)   │  COMM_PIPE  │ DOT_EXLM │    /     │ LT(5, `) │
+//        └────────────┴───────┴───────┼───────────────┼───────┼─────────────┤   ├─────┼─────────────┼─────────────┼──────────┴──────────┴──────────┘
 //                                     │ OSM(MOD_RALT) │  spc  │ TD(DSH_HPR) │   │ ent │ TD(ESC_SYM) │ TD(DEL_NUM) │
 //                                     └───────────────┴───────┴─────────────┘   └─────┴─────────────┴─────────────┘
 [0] = LAYOUT_split_3x6_3(
-      LT(2, KC_ESC) , KC_Q  , KC_W  , KC_E          , KC_R   , KC_T        ,     KC_Y   , KC_U        , KC_I        , KC_O     , KC_P     , KC_BSPC,
-      KC_TAB        , GUI_A , ALT_S , CTL_D         , SFT_F  , KC_G        ,     KC_H   , SFT_J       , CTL_K       , ALT_L    , GUI_SCLN , KC_QUOT,
-      OSL(4)        , KC_Z  , KC_X  , KC_C          , KC_V   , KC_B        ,     KC_N   , LT(3, KC_M) , COMM_PIPE   , DOT_EXLM , KC_SLSH  , KC_GRV ,
+      LT(2, KC_ESC) , KC_Q  , KC_W  , KC_E          , KC_R   , KC_T        ,     KC_Y   , KC_U        , KC_I        , KC_O     , KC_P     , KC_BSPC      ,
+      KC_TAB        , GUI_A , ALT_S , CTL_D         , SFT_F  , KC_G        ,     KC_H   , SFT_J       , CTL_K       , ALT_L    , GUI_SCLN , KC_QUOT      ,
+      OSL(4)        , KC_Z  , KC_X  , KC_C          , KC_V   , KC_B        ,     KC_N   , LT(3, KC_M) , COMM_PIPE   , DOT_EXLM , KC_SLSH  , LT(5, KC_GRV),
                                       OSM(MOD_RALT) , KC_SPC , TD(DSH_HPR) ,     KC_ENT , TD(ESC_SYM) , TD(DEL_NUM)
 ),
 
@@ -202,20 +202,36 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                KC_TRNS    , LGUI(KC_0) , TO(0)        ,     LGUI(KC_ENT) , KC_TRNS       , KC_TRNS
 ),
 
-//        ┌───────┬─────┬────┬─────┬───────┬────────┐   ┌─────┬──────┬──────┬──────┬──────┬─────┐
-//        │ TO(0) │ f12 │ f7 │ f8  │  f9   │  pscr  │   │ no  │  no  │  no  │  no  │  no  │ del │
-//        ├───────┼─────┼────┼─────┼───────┼────────┤   ├─────┼──────┼──────┼──────┼──────┼─────┤
-//        │  no   │ f11 │ f4 │ f5  │  f6   │  ins   │   │ no  │ lsft │ lctl │ ralt │ lgui │ no  │
-//        ├───────┼─────┼────┼─────┼───────┼────────┤   ├─────┼──────┼──────┼──────┼──────┼─────┤
-//        │ TO(0) │ f10 │ f1 │ f2  │  f3   │ LSG(e) │   │ no  │  no  │  no  │  no  │  no  │ no  │
-//        └───────┴─────┴────┼─────┼───────┼────────┤   ├─────┼──────┼──────┼──────┴──────┴─────┘
-//                           │     │ TO(0) │        │   │     │      │      │
-//                           └─────┴───────┴────────┘   └─────┴──────┴──────┘
+//        ┌───────┬─────┬────┬─────┬─────┬────────┐   ┌─────┬──────┬──────┬──────┬──────┬─────┐
+//        │ TO(0) │ f13 │ f7 │ f8  │ f9  │  pscr  │   │ no  │  no  │  no  │  no  │  no  │ del │
+//        ├───────┼─────┼────┼─────┼─────┼────────┤   ├─────┼──────┼──────┼──────┼──────┼─────┤
+//        │  no   │ f13 │ f4 │ f5  │ f6  │  ins   │   │ no  │ lsft │ lctl │ ralt │ lgui │ no  │
+//        ├───────┼─────┼────┼─────┼─────┼────────┤   ├─────┼──────┼──────┼──────┼──────┼─────┤
+//        │ TO(0) │ f11 │ f1 │ f2  │ f3  │ LSG(e) │   │ no  │  no  │  no  │  no  │  no  │ no  │
+//        └───────┴─────┴────┼─────┼─────┼────────┤   ├─────┼──────┼──────┼──────┴──────┴─────┘
+//                           │     │ f10 │        │   │     │      │      │
+//                           └─────┴─────┴────────┘   └─────┴──────┴──────┘
 [4] = LAYOUT_split_3x6_3(
-      TO(0) , KC_F12 , KC_F7 , KC_F8   , KC_F9 , KC_PSCR   ,     KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_DEL,
-      KC_NO , KC_F11 , KC_F4 , KC_F5   , KC_F6 , KC_INS    ,     KC_NO   , KC_LSFT , KC_LCTL , KC_RALT , KC_LGUI , KC_NO ,
-      TO(0) , KC_F10 , KC_F1 , KC_F2   , KC_F3 , LSG(KC_E) ,     KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO ,
-                               KC_TRNS , TO(0) , KC_TRNS   ,     KC_TRNS , KC_TRNS , KC_TRNS
+      TO(0) , KC_F13 , KC_F7 , KC_F8   , KC_F9  , KC_PSCR   ,     KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_DEL,
+      KC_NO , KC_F13 , KC_F4 , KC_F5   , KC_F6  , KC_INS    ,     KC_NO   , KC_LSFT , KC_LCTL , KC_RALT , KC_LGUI , KC_NO ,
+      TO(0) , KC_F11 , KC_F1 , KC_F2   , KC_F3  , LSG(KC_E) ,     KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO ,
+                               KC_TRNS , KC_F10 , KC_TRNS   ,     KC_TRNS , KC_TRNS , KC_TRNS
+),
+
+//        ┌──────┬───┬───┬──────┬─────┬───┐   ┌─────┬──────┬─────────┬───┬───┬───────┐
+//        │ esc  │ q │ w │  e   │  r  │ t │   │  y  │  u   │    i    │ o │ p │ bspc  │
+//        ├──────┼───┼───┼──────┼─────┼───┤   ├─────┼──────┼─────────┼───┼───┼───────┤
+//        │ tab  │ a │ s │  d   │  f  │ g │   │  h  │  j   │    k    │ l │ ; │   '   │
+//        ├──────┼───┼───┼──────┼─────┼───┤   ├─────┼──────┼─────────┼───┼───┼───────┤
+//        │ lctl │ z │ x │  c   │  v  │ b │   │  n  │  m   │    ,    │ . │ / │ TG(0) │
+//        └──────┴───┴───┼──────┼─────┼───┤   ├─────┼──────┼─────────┼───┴───┴───────┘
+//                       │ lalt │ spc │ - │   │ ent │ lgui │ QK_LLCK │
+//                       └──────┴─────┴───┘   └─────┴──────┴─────────┘
+[5] = LAYOUT_split_3x6_3(
+      KC_ESC  , KC_Q , KC_W , KC_E    , KC_R   , KC_T    ,     KC_Y   , KC_U    , KC_I    , KC_O   , KC_P    , KC_BSPC,
+      KC_TAB  , KC_A , KC_S , KC_D    , KC_F   , KC_G    ,     KC_H   , KC_J    , KC_K    , KC_L   , KC_SCLN , KC_QUOT,
+      KC_LCTL , KC_Z , KC_X , KC_C    , KC_V   , KC_B    ,     KC_N   , KC_M    , KC_COMM , KC_DOT , KC_SLSH , TG(0)  ,
+                              KC_LALT , KC_SPC , KC_MINS ,     KC_ENT , KC_LGUI , QK_LLCK
 )
 };
 
@@ -253,13 +269,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     // List of keycodes with a custom tapping term
     switch (keycode) {
-    case TD(DSH_HPR):
     case TD(DEL_NUM):
     case TD(ESC_SYM):
       return TAPPING_TERM - 100;
     case SFT_J:
     case SFT_F:
       return TAPPING_TERM - 20;
+    case TD(DSH_HPR):
+      return TAPPING_TERM - 125;
     default:
       return TAPPING_TERM;
     }
@@ -441,7 +458,8 @@ const char *layer_names[] = {
     "Sym",
     "Num",
     "Hypr",
-    "fn"
+    "fn",
+    "Game"
 };
 
 // Function to get the name of the current layer
